@@ -16,4 +16,4 @@ If, however, too is cooled, the heater is operated. Basically a thermostat contr
 In microSD folder contains the files for the html, you have to introduce them to the microSD card.
 
 Micro SD --> Files with web content.
-Hardware Architectur --> Hardware configuration design.
+Hardware Architecture --> Hardware configuration design.
