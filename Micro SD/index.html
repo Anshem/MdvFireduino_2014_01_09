@@ -1,0 +1,450 @@
+<!DOCTYPE HTML> 
+<html>
+
+
+<head>
+<link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.3/themes/base/jquery-ui.css" type="text/css" media="all" />
+<link rel="stylesheet" href="http://static.jquery.com/ui/css/demo-docs-theme/ui.theme.css" type="text/css" media="all" />
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js" type="text/javascript"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.3/jquery-ui.min.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+   
+//Popup de combate
+function call()
+        {
+            var myWindow = window.open("","MsgWindow","width=750,height=305,top=260,left=325,toolbar=no, location=no,status=no,menubar=no,scrollbars=no,resizable=no");
+			myWindow.document.write("<!DOCTYPE HTML> <html>	<head> <style> #cabecera{ width:740px; height:190px;  } #pie{ width:80px; height:80px; margin-left:160px; } #stop{margin-left:40%} </style> <body> <div id='cabecera'> <img id ='cabecera' src='./espera.png' alt='Logo'> </div> <div id='pie'> <img id ='pie' src='./loading.gif' alt='Loading'> </div> </body> </html>");  
+            setTimeout(function ()
+        {
+            myWindow.close();
+			
+			var resultPage="http://192.168.2.100/FileResponse.html"	
+			location.href=resultPage;
+	
+        },((document.getElementById("Tiempo").value)*1000) );
+	}   
+       
+        function wait()
+        {
+            myWindow.close();
+}
+		
+// Popup de espera de componente (calor o frio)
+function callComponente()
+        {
+            var myWindow2 = window.open("","MsgWindow2","width=750,height=305,top=260,left=325,toolbar=no, location=no,status=no,menubar=no,scrollbars=no,resizable=no");
+			myWindow2.document.write("<!DOCTYPE HTML> <html>	<head> <style> #cabecera{ width:740px; height:190px;  } #pie{ width:80px; height:80px; margin-left:160px; } #stop{margin-left:40%} </style> <body> <div id='cabecera'> <img id ='cabecera' src='./espera_componentes.png' alt='Logo'> </div> <div id='pie'> <img id ='pie' src='./loading.gif' alt='Loading'> </div> </body> </html>");  
+            setTimeout(function ()
+        {
+            myWindow2.close();
+        },(3*1000) );
+}  
+		
+		
+	function warm(){
+		var operacion ="http://192.168.2.100/OPERA/Y";
+		callComponente();
+		peticionGET(operacion);
+	}
+	
+	function cooler(){
+		var operacion ="http://192.168.2.100/OPERA/Z";
+		callComponente();
+		peticionGET(operacion);
+	}
+		
+		
+		
+
+
+function peticionGET(operacion) {
+  // Obtener la instancia del objeto XMLHttpRequest
+  if(window.XMLHttpRequest) {
+    peticion_http = new XMLHttpRequest();
+  }
+  else if(window.ActiveXObject) {
+    peticion_http = new ActiveXObject("Microsoft.XMLHTTP");
+  }
+ 
+  // Realizar peticion HTTP
+  peticion_http.open('GET', operacion);
+  peticion_http.setRequestHeader("Content-Type", "text/plain");
+  peticion_http.send(null);
+ 
+
+}
+
+
+
+
+//---------------------/Pruebas con XMLhttpRequest-----------------------------
+	
+		// FUNCIONES QUE LLAMAN AL PUT DEPENDIENDO DE LA OPERACION
+		
+		//Funcion para inciar el combate
+		function goCombat(){
+			var tempMaxEntero=document.getElementById("temperaturaMaxEntero").value;
+			var tempMaxDecimal=document.getElementById("temperaturaMaxDecimal").value;
+			var tempMinEntero=document.getElementById("temperaturaMinEntero").value;
+			var tempMinDecimal=document.getElementById("temperaturaMinDecimal").value;
+			var tiempoRefresco=document.getElementById("TiempoRefresco").value;
+			var tiempo=document.getElementById("Tiempo").value;
+			
+
+			//Comprobamos los digitos del tiempo (maximo son 3)
+			if(tiempo.length!=0){
+				//Si es 1 o 2 le añadimos 0 a la izquierda
+				if(tiempo.length==1){
+				tiempo="00"+tiempo;
+				}
+				
+				if(tiempo.length==2){
+				tiempo="0"+tiempo;
+				}
+
+				
+				if(tiempoRefresco.length==1){
+				tiempoRefresco="000"+tiempoRefresco;
+				}
+				
+				else if(tiempoRefresco.length==2){
+				tiempoRefresco="00"+tiempoRefresco;
+				}
+
+				else if(tiempoRefresco.length==3){
+				tiempoRefresco="0"+tiempoRefresco;
+				}
+
+				else if(tiempoRefresco.length==0){
+				tiempoRefresco="0050";
+				}
+
+
+
+
+				//comprobamos que la temperatura maxima sea mayor que la minima
+				if(tempMaxEntero>tempMinEntero){
+					
+					var operacion ="http://192.168.2.100/OPERA/"+tempMaxEntero+"."+tempMaxDecimal+"M"+tempMinEntero+"."+tempMinDecimal+"m"+tiempo+"t"+tiempoRefresco;
+					call();
+					peticionGET(operacion);
+				}
+				else if(tempMaxEntero==tempMinEntero){
+					if(tempMaxDecimal>tempMinDecimal){
+						
+						var operacion ="http://192.168.2.100/OPERA/"+tempMaxEntero+"."+tempMaxDecimal+"M"+tempMinEntero+"."+tempMinDecimal+"m"+tiempo+"t"+tiempoRefresco;
+						call();
+						peticionGET(operacion);
+					}
+					else{
+						alert("La temperatura maxima debe ser mayor que la minima");
+					}
+				}
+				else{
+					alert("La temperatura maxima debe ser mayor que la minima");
+				}
+
+
+				
+
+
+			}
+			else{
+				alert("Es totalmente obligatorio introducir un tiempo de combate");
+			}
+		}
+	
+		//Funcion para probar que se meten numeros
+		function justNumbers(e)
+        {
+        var keynum = window.event ? window.event.keyCode : e.which;
+        if ((keynum == 8) || (keynum == 46))
+        return true;
+         
+        return /\d/.test(String.fromCharCode(keynum));
+        }
+
+
+	
+
+</script>	
+
+
+<!------------------------- Style------------------------------------>
+<style>
+	
+body{
+margin:auto;
+width:1050px;
+font-family: sans-serif;
+
+}
+
+
+#cabecera{
+width:1050px;
+height:250px;
+
+margin-bottom:10px;
+float:left;
+
+
+}
+
+#tiempo{
+margin-bottom:10px;
+float:left;
+}
+#tiempoRefresco{
+margin-bottom:10px;
+float:left;
+}
+
+#Tiempo{
+display:block;
+width:295px;
+float:left;
+}
+#TiempoRefresco{
+display:block;
+width:295px;
+float:left;
+}
+#contenido{
+float:left;
+width:1050px;
+background-color:#F8F8F8;
+}
+#LEDs{
+border:solid 1px #F8F8F8;
+font-weight:bold;
+color:#4A4A4A;
+float:left;
+text-align: center;
+width:800px;
+margin-top:30px;
+margin-left:100px;
+background-color:white;
+}
+
+.bloques{
+display:block;
+width:300px;
+float:left;
+}
+
+
+
+.inputs{
+
+display:block;
+width:300px;
+float:left;
+}
+
+#titulo{
+text-align: center;
+width:810px;
+height:100px;
+padding-top:50px;
+margin-left:10px;
+float:left;
+font-size:40px;
+
+}
+
+#formulario{
+font-weight:bold;
+color:#4A4A4A;
+text-align: center;
+width:800px;
+margin-top:30px;
+float:left;
+margin-left:150px;
+background-color:white;
+border-radius:5px;
+}
+
+#temperaturaMax{
+margin-bottom:10px;
+float:left;
+
+}
+#temperaturaMin{
+margin-bottom:10px;
+float:left;
+clear:left;
+
+}
+
+#TempMuestra{
+text-align: center;
+width:800px;
+height:50px;
+padding-top:10px;
+margin-top:30px;
+float:left;
+margin-left:100px;
+font-size:30px;
+background-color:orange;
+border-radius:5px;
+color:white;
+}
+
+
+#botones{
+margin-top:100px;
+width:800px;
+float:left;
+clear:both;
+background:#2E64FE;
+border-radius:5px;
+
+}
+	
+	
+</style>
+
+	</head>
+
+
+	<!--Empieza la el cuerpo-->
+	<body>
+	
+	<!--Header-->
+	<div id="cabecera">
+	
+		<!--Logo-->
+		<img id ="cabecera" src="./logo.png" alt="Logo">
+		
+		</div>
+	
+	</div>
+	<!--Content-->
+	<div id="Contenido">
+	
+
+	
+	
+	
+	
+	<!--Form-->
+	<form id="formulario" action="demo_form.asp" method="get">
+	
+		<!-- Inputs -->
+	   <div id="temperaturaMin"><span class="bloques">Temperatura M&iacute;nima: </span>
+			  
+			    <select id="temperaturaMinEntero"  name="temperaturaMinEntero">
+	          	<option value="12">12</option>
+	          	<option value="13">13</option>
+	          	<option value="14">14</option>
+				<option value="15">15</option>
+	          	<option value="16">16</option>
+	          	<option value="17">17</option>
+				<option value="18">18</option>
+	          	<option value="19">19</option>
+	          	<option value="20">20</option>
+				<option value="21">21</option>
+				<option value="22">22</option>
+				<option value="23">23</option>
+				<option value="24">24</option>
+				<option value="25">25</option>
+				<option value="26">26</option>
+				<option value="27">27</option>
+				<option value="28">28</option>
+				<option value="29">29</option>
+				<option value="30">30</option>
+	          	
+	          </select>
+			  
+			  <span> . </span>
+			  
+			     <select id="temperaturaMinDecimal"  name="temperaturaMinDecimal">
+	          
+	          	<option value="0">0</option>
+				<option value="1">1</option>
+				<option value="2">2</option>
+				<option value="3">3</option>
+				<option value="4">4</option>
+				<option value="5">5</option>
+				<option value="6">6</option>
+				<option value="7">7</option>
+				<option value="8">8</option>
+				<option value="9">9</option>
+	
+	          	
+	          </select>
+			  
+			     <span> &#176;C</span>
+			  
+			  </div>
+	
+	
+  <div id="temperaturaMax"><span class="bloques">Temperatura M&aacute;xima: </span>
+   <select id="temperaturaMaxEntero" name="temperaturaMaxEntero">
+	          	<option value="12">12</option>
+	          	<option value="13">13</option>
+	          	<option value="14">14</option>
+				<option value="15">15</option>
+	          	<option value="16">16</option>
+	          	<option value="17">17</option>
+				<option value="18">18</option>
+	          	<option value="19">19</option>
+	          	<option value="20">20</option>
+				<option value="21">21</option>
+				<option value="22">22</option>
+				<option value="23">23</option>
+				<option value="24">24</option>
+				<option value="25">25</option>
+				<option value="26">26</option>
+				<option value="27">27</option>
+				<option value="28">28</option>
+				<option value="29">29</option>
+				<option value="30">30</option>
+	          	
+	          </select>
+			  <span> . </span>
+			   <select id="temperaturaMaxDecimal" name="temperaturaMaxDecimal">
+	          
+	          	<option value="0">0</option>
+				<option value="1">1</option>
+				<option value="2">2</option>
+				<option value="3">3</option>
+				<option value="4">4</option>
+				<option value="5">5</option>
+				<option value="6">6</option>
+				<option value="7">7</option>
+				<option value="8">8</option>
+				<option value="9">9</option>
+	
+	          	
+	          </select>
+			    <span> &#176;C</span>
+			  
+			  
+			  </div>
+			  
+			
+  
+
+  <div id="tiempo"><span class="bloques">Tiempo:</span><input maxlength="3" placeholder="Tiempo en segundos"  type="text" name="Tiempo" id="Tiempo" onkeypress="return justNumbers(event);"><br></div>
+  <div id="tiempoRefresco"><span class="bloques">Tiempo de refresco:</span><input maxlength="4" placeholder="Tiempo en milisegundos (Por defecto 50ms)"  type="text" name="TiempoRefresco" id="TiempoRefresco" onkeypress="return justNumbers(event);"><br></div>
+  <div ><span class="bloques">Refrigerador: </span><input onclick="cooler()" id="refrigerador" class="inputs" type="button" value="Probar" name="Refrigerador"><br></div>
+  <div ><span class="bloques">Calentador:</span><input onclick="warm()" id="calentador" class="inputs" type="button" value="Probar" name="Calentador"><br></div>
+  
+  
+  <div id="botones">
+  <button  onclick="goCombat()" type="button" >Combate!</button></div>
+</form>
+	
+	
+	</div>
+	
+
+
+	</body>
+
+
+
+</html>
